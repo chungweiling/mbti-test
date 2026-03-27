@@ -120,7 +120,7 @@
                 AI 核心人格解析系統
             </h1>
             <p class="text-indigo-200 mb-8 text-lg">
-                透過 10 個核心維度問題，精準掃描並解碼你的大腦運作模式（MBTI）。<br>準備好連接系統了嗎？
+                透過 10 個直覺式生活場景，掃描你的大腦運作模式（MBTI）。<br>準備好連接系統了嗎？
             </p>
             <button onclick="startQuiz()" class="tech-btn bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-8 rounded-full text-lg w-full md:w-auto shadow-lg">
                 啟動分析序列
@@ -184,85 +184,83 @@
 
     <!-- 測驗邏輯 JavaScript -->
     <script>
-        // 定義 10 個問題 (E/I: 3題, S/N: 3題, T/F: 2題, J/P: 2題)
+        // 改寫後的 10 個生活化問題
         const questions = [
             {
-                q: "1. 週末好不容易有空閒時間，你通常傾向怎麼度過？",
-                optA: { text: "和朋友聚會、參加有趣的活動去充電", trait: "E" },
-                optB: { text: "獨自在家看書、追劇或打遊戲來恢復精力", trait: "I" }
+                q: "1. 結束疲憊的一天後，你覺得怎麼休息最舒服？",
+                optA: { text: "找好朋友聚聚、聊聊天，感覺比較有精神", trait: "E" },
+                optB: { text: "把自己關在房間安靜一下，不想跟任何人說話", trait: "I" }
             },
             {
-                q: "2. 當你學習一項新技能或接觸新事物時，你比較偏好？",
-                optA: { text: "直接了解具體的步驟、按部就班實際操作", trait: "S" },
-                optB: { text: "先了解它背後的概念、理論和整體的意義", trait: "N" }
+                q: "2. 在滑社群媒體（如Threads或IG）時，你比較會被哪種內容吸引？",
+                optA: { text: "實用的生活攻略、或是朋友發生了什麼具體的事", trait: "S" },
+                optB: { text: "心靈雞湯、燒腦的理論或是很有創意的梗圖", trait: "N" }
             },
             {
-                q: "3. 面對需要做決定的情況時，你主要依賴什麼標準？",
-                optA: { text: "邏輯分析、客觀事實與效率考量", trait: "T" },
-                optB: { text: "個人價值觀、以及這個決定會對他人造成的情感影響", trait: "F" }
+                q: "3. 朋友被另一半甩了找你哭訴，你的反應通常是？",
+                optA: { text: "幫他分析為什麼會分手，並給他實際的建議", trait: "T" },
+                optB: { text: "先抱抱他，陪他一起罵對方，讓他在情感上被支持", trait: "F" }
             },
             {
-                q: "4. 面對即將到來的旅行，你的準備方式通常是？",
-                optA: { text: "提前規劃好詳細的行程表和訂好所有票券", trait: "J" },
-                optB: { text: "只決定大方向，喜歡隨性探索、見機行事", trait: "P" }
+                q: "4. 明天要出國旅行，你現在的狀態是？",
+                optA: { text: "行程表早就印好，每個景點的交通都查過了", trait: "J" },
+                optB: { text: "還沒開始收行李，打算到當地再看心情決定去哪", trait: "P" }
             },
             {
-                q: "5. 在一個有許多陌生人的社交場合中，你的狀態通常是？",
-                optA: { text: "主動找人搭話，很容易融入熱鬧的氣氛", trait: "E" },
-                optB: { text: "待在舒適圈，傾向等別人來找我或只和熟人說話", trait: "I" }
+                q: "5. 在一群不熟的人中間，你通常是那個...？",
+                optA: { text: "負責開話題的人，不說話會覺得尷尬", trait: "E" },
+                optB: { text: "默默滑手機或觀察大家的人，希望沒人注意到我", trait: "I" }
             },
             {
-                q: "6. 在日常生活中，你的思維更常聚焦在？",
-                optA: { text: "此時此地的現實狀況、以及眼前的具體細節", trait: "S" },
-                optB: { text: "未來的各種可能性、隱藏的含義或創意發想", trait: "N" }
+                q: "6. 當你在聽別人講解一件事情時，你比較在乎？",
+                optA: { text: "細節跟具體的作法，沒講清楚我會很困惑", trait: "S" },
+                optB: { text: "大方向跟邏輯，細節之後再說也沒關係", trait: "N" }
             },
             {
-                q: "7. 當朋友遇到困難或心情不好來找你傾訴，你通常的第一反應是？",
-                optA: { text: "幫他理性分析問題癥結點，並提出解決方案", trait: "T" },
-                optB: { text: "先安撫他的情緒，表達理解、同理與支持", trait: "F" }
+                q: "7. 工作或做專案時，你比較像哪一種人？",
+                optA: { text: "對事不對人，效率跟結果最重要，講實話沒關係", trait: "T" },
+                optB: { text: "對人不對事，希望能和諧相處，不要讓大家不高興", trait: "F" }
             },
             {
-                q: "8. 關於你的工作或生活風格，你覺得哪種描述更貼切？",
-                optA: { text: "喜歡有條理、有明確截止日期、按計畫完成任務", trait: "J" },
-                optB: { text: "喜歡保持彈性、邊做邊調整，甚至享受最後一刻的靈感", trait: "P" }
+                q: "8. 房間或書桌的狀態，通常反映了你的什麼特質？",
+                optA: { text: "東西都有固定的位置，我不喜歡亂七八糟", trait: "J" },
+                optB: { text: "亂中有序，我總能在這堆東西裡找到我要的", trait: "P" }
             },
             {
-                q: "9. 經歷了一整天的高強度工作或學習後，你會如何「充電」？",
-                optA: { text: "找人聊聊今天的趣事或出門走走", trait: "E" },
-                optB: { text: "給自己完全安靜、不被打擾的獨處時間", trait: "I" }
+                q: "9. 去餐廳吃飯點餐時，你的風格是？",
+                optA: { text: "看大家都點什麼，或是直接問店員推薦什麼", trait: "E" },
+                optB: { text: "自己看菜單研究很久，不需要別人插嘴", trait: "I" }
             },
             {
-                q: "10. 當你要向別人描述一件事情時，你通常會？",
-                optA: { text: "提供非常詳細、精確的具體細節和過程", trait: "S" },
-                optB: { text: "直接講述整體的輪廓、重點或是你的直覺感受", trait: "N" }
+                q: "10. 看到一個新產品（如新款AI手機），你最感興趣的是？",
+                optA: { text: "它到底強在哪？規格、價錢跟實際功能是什麼", trait: "S" },
+                optB: { text: "它能為未來生活帶來什麼改變？有沒有新玩法", trait: "N" }
             }
         ];
 
         // 16 型人格描述字典
         const mbtiProfiles = {
-            "INTJ": { title: "建築師 (Architect)", desc: "想像力豐富且具戰略性的思想家，一切皆在計畫之中。你擁有強大的邏輯與遠見。" },
-            "INTP": { title: "邏輯學家 (Logician)", desc: "渴望知識的創新發明家。你對於宇宙的運作原理與未知的理論充滿著無窮的好奇。" },
-            "ENTJ": { title: "指揮官 (Commander)", desc: "大膽、富有想像力且意志強大的領導者。你總能找到方法——或自己創造方法。" },
-            "ENTP": { title: "辯論家 (Debater)", desc: "聰明好奇的思想者，無法抗拒智力挑戰。你喜歡拆解舊觀念，享受腦力激盪的快感。" },
-            "INFJ": { title: "提倡者 (Advocate)", desc: "安靜而神祕，但極具啟發性的理想主義者。你擁有深刻的洞察力，渴望為世界帶來正向改變。" },
-            "INFP": { title: "調停者 (Mediator)", desc: "詩意、善良的利他主義者。你的內心世界極其豐富，總是熱衷於捍衛你所信仰的價值觀。" },
-            "ENFJ": { title: "主人翁 (Protagonist)", desc: "充滿魅力且具啟發性的領導者。你擁有極強的同理心，擅長激勵聽眾並帶領團隊前進。" },
-            "ENFP": { title: "競選者 (Campaigner)", desc: "熱情洋溢的自由靈魂。你極具創意，總是能在平凡的生活中找到無窮的樂趣與可能性。" },
-            "ISTJ": { title: "物流師 (Logistician)", desc: "實際且注重事實的個人。你極度可靠、一絲不苟，是維持社會秩序與穩定運作的基石。" },
-            "ISFJ": { title: "守衛者 (Defender)", desc: "非常專注且溫暖的保護者。你默默付出，總是準備好用極大的耐心去照顧與保護所愛之人。" },
-            "ESTJ": { title: "總經理 (Executive)", desc: "出色的管理者。你講求效率與規則，擅長管理事物或人員，能在混亂中建立起秩序。" },
-            "ESFJ": { title: "執政官 (Consul)", desc: "極度關心他人、善於社交的受歡迎人士。你熱心助人，總是致力於確保周遭的人感到快樂。" },
-            "ISTP": { title: "鑑賞家 (Virtuoso)", desc: "大膽實用的實驗者。你沈著冷靜，喜歡用雙手探索世界，掌握各種工具與技能。" },
-            "ISFP": { title: "探險家 (Adventurer)", desc: "靈活且充滿魅力的藝術家。你活在當下，打破常規，隨時準備探索新事物與新體驗。" },
-            "ESTP": { title: "企業家 (Entrepreneur)", desc: "聰明、精力充沛且非常敏銳。你喜歡活在刺激之中，是天生的行動派，擅長解決眼前的問題。" },
-            "ESFP": { title: "表演者 (Entertainer)", desc: "隨性、精力充沛且熱情的藝人。有你在的地方就充滿歡樂，你擅長將每一刻變成派對。" }
+            "INTJ": { title: "建築師 (Architect)", desc: "你是極具戰略眼光的思想家，看事情總能一眼穿透本質。你非常有規劃，不喜歡浪費時間在沒效率的事情上。" },
+            "INTP": { title: "邏輯學家 (Logician)", desc: "你腦袋裡裝著一個宇宙。你喜歡鑽研感興趣的學問，比起跟人社交，你更喜歡拆解邏輯、尋找真理。" },
+            "ENTJ": { title: "指揮官 (Commander)", desc: "你是天生的領袖。你充滿自信且意志堅定，擅長帶領大家在混亂中整理出秩序，達成最高目標。" },
+            "ENTP": { title: "辯論家 (Debater)", desc: "你最討厭無聊！你反應靈敏，喜歡挑戰舊有規矩。你是腦力激盪的高手，總是能想出別人意想不到的點子。" },
+            "INFJ": { title: "提倡者 (Advocate)", desc: "你是溫柔的洞察者。雖然安靜，但你對世界有深刻的理想，希望能透過自己的力量幫助他人，是極具影響力的精神導向。" },
+            "INFP": { title: "調停者 (Mediator)", desc: "你是充滿詩意的夢想家。內心世界極其細膩，比起現實社會，你更重視精神上的自由與你所深信的價值觀。" },
+            "ENFJ": { title: "主人翁 (Protagonist)", desc: "你是最能激勵人心的人。你天生帶有溫暖的光輝，能輕易察覺別人的需求，並帶領團隊走向更好的未來。" },
+            "ENFP": { title: "競選者 (Campaigner)", desc: "你是最自由的靈魂！你充滿好奇心與活力，對生活充滿熱忱，能從簡單的事情中發現樂趣，身邊的人總被你的能量感染。" },
+            "ISTJ": { title: "物流師 (Logistician)", desc: "你是最可靠的基石。你腳踏實地，重視規則與傳統。只要答應別人的事，你一定會負責到底，做得一絲不苟。" },
+            "ISFJ": { title: "守衛者 (Defender)", desc: "你是默默付出的無名英雄。你溫柔、專注且非常有責任心，總是細心地守護著身邊的人，讓大家感到安心。" },
+            "ESTJ": { title: "總經理 (Executive)", desc: "你是效率的化身。你做事非常有條理，善於整合資源。你相信努力工作與準時，是社會運作不可或缺的主力。" },
+            "ESFJ": { title: "執政官 (Consul)", desc: "你是團體中的黏著劑。你熱愛社交、關心朋友。你總是知道如何照顧到每個人的情緒，讓氣氛變得輕鬆愉快。" },
+            "ISTP": { title: "鑑賞家 (Virtuoso)", desc: "你是冷靜的觀察者。你喜歡親自動手做，或是探索機械、數據。面對突發狀況，你總能冷靜地用最實用的方式解決問題。" },
+            "ISFP": { title: "探險家 (Adventurer)", desc: "你是活在當下的藝術家。你喜歡美的事物，擁有靈活且獨特的風格。比起規劃未來，你更喜歡探索眼前的無限驚喜。" },
+            "ESTP": { title: "企業家 (Entrepreneur)", desc: "你是天生的行動派！你反應極快，敢於冒險，享受活在刺激與挑戰中。你是那種會直接衝上前解決問題的人。" },
+            "ESFP": { title: "表演者 (Entertainer)", desc: "你就是派對中心！你大方、迷人且精力充沛。你最擅長讓大家開心，對於每一刻的感官體驗都極其敏感且熱愛。" }
         };
 
-        // 狀態變數
         let currentQuestionIndex = 0;
         let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
 
-        // DOM 元素
         const welcomeScreen = document.getElementById('welcome-screen');
         const quizScreen = document.getElementById('quiz-screen');
         const resultScreen = document.getElementById('result-screen');
@@ -273,16 +271,13 @@
         const progressText = document.getElementById('progress-text');
         const progressBarFill = document.getElementById('progress-bar-fill');
 
-        // 啟動測驗
         function startQuiz() {
             welcomeScreen.classList.add('hidden-screen');
             quizScreen.classList.remove('hidden-screen');
             renderQuestion();
         }
 
-        // 渲染題目
         function renderQuestion() {
-            // 重置動畫效果
             questionContainer.classList.remove('fade-in-up');
             void questionContainer.offsetWidth; 
             questionContainer.classList.add('fade-in-up');
@@ -296,13 +291,11 @@
             optionBBtn.innerText = currentQ.optB.text;
             optionBBtn.setAttribute('data-trait', currentQ.optB.trait);
 
-            // 更新進度顯示
             progressText.innerText = `${currentQuestionIndex + 1} / ${questions.length}`;
             const percentage = ((currentQuestionIndex + 1) / questions.length) * 100;
             progressBarFill.style.width = `${percentage}%`;
         }
 
-        // 選擇選項
         function selectOption(opt) {
             const btn = opt === 'A' ? optionABtn : optionBBtn;
             const trait = btn.getAttribute('data-trait');
@@ -316,7 +309,6 @@
             }
         }
 
-        // 計算結果並顯示
         function calculateResult() {
             const typeE_I = scores.E >= scores.I ? 'E' : 'I';
             const typeS_N = scores.S >= scores.N ? 'S' : 'N';
@@ -324,7 +316,7 @@
             const typeJ_P = scores.J >= scores.P ? 'J' : 'P';
 
             const finalMBTI = `${typeE_I}${typeS_N}${typeT_F}${typeJ_P}`;
-            const profile = mbtiProfiles[finalMBTI] || mbtiProfiles["INTJ"]; // 備援機制
+            const profile = mbtiProfiles[finalMBTI] || mbtiProfiles["INTJ"];
 
             quizScreen.classList.add('hidden-screen');
             resultScreen.classList.remove('hidden-screen');
@@ -334,11 +326,10 @@
             document.getElementById('result-title').innerText = profile.title;
             document.getElementById('result-desc').innerText = profile.desc;
 
-            // 顯示原始數據數據
-            document.getElementById('stat-ei').innerText = `E ${scores.E} : I ${scores.I}`;
-            document.getElementById('stat-sn').innerText = `S ${scores.S} : N ${scores.N}`;
-            document.getElementById('stat-tf').innerText = `T ${scores.T} : F ${scores.F}`;
-            document.getElementById('stat-jp').innerText = `J ${scores.J} : P ${scores.P}`;
+            document.getElementById('stat-ei').innerText = `外向 ${scores.E} : 內向 ${scores.I}`;
+            document.getElementById('stat-sn').innerText = `實感 ${scores.S} : 直覺 ${scores.N}`;
+            document.getElementById('stat-tf').innerText = `理性 ${scores.T} : 感性 ${scores.F}`;
+            document.getElementById('stat-jp').innerText = `判斷 ${scores.J} : 感知 ${scores.P}`;
         }
     </script>
 </body>
