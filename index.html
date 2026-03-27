@@ -3,14 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最新的mbti測試</title>
+    
+    <!-- 1. 更改瀏覽器分頁顯示的名稱 -->
+    <title>2026最新mbti測試</title>
+
+    <!-- 2. 更改 LINE/FB 分享時顯示的名稱 (Open Graph) -->
+    <meta property="og:title" content="2026最新mbti測試">
+    <meta property="og:description" content="透過 10 個核心維度問題，精準掃描並解碼你的大腦運作模式。">
+    <!-- 如果你有圖片網址，可以放在這裡，分享時就會有圖 -->
+    <meta property="og:image" content=""> 
+
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- 你的專屬 Firebase 配置 ---
         const firebaseConfig = {
             apiKey: "AIzaSyBYpIYY7h2nseUQxgVtxOTpFlGXhEej-fo",
             authDomain: "mbti-test-20b47.firebaseapp.com",
@@ -21,12 +29,10 @@
             appId: "1:957808705740:web:ff84d9b36de997a3db8269",
             measurementId: "G-3V65MZ0GXC"
         };
-        // ---------------------------------------
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // 改用 Realtime Database 儲存
         window.saveToCloud = async (userName, mbtiResult) => {
             try {
                 const resultsRef = ref(db, 'mbti_results');
@@ -85,12 +91,13 @@
                     <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
             </div>
+            <!-- 3. 更改網頁內的大標題 -->
             <h1 class="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
                 AI 核心人格解析系統
             </h1>
             <div class="mb-8 text-left">
                 <label class="block text-indigo-300 text-sm mb-2 ml-1">請輸入您的代號 (姓名)</label>
-                <input type="text" id="user-name" placeholder="例如：簡道乾" 
+                <input type="text" id="user-name" placeholder="例如：維玲" 
                        class="w-full bg-black/30 border border-indigo-500/50 rounded-xl p-4 text-center text-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
                 <p id="error-msg" class="text-red-400 text-sm mt-2 hidden text-center">請先輸入代號以連結系統</p>
             </div>
@@ -99,7 +106,7 @@
             </button>
         </div>
 
-        <!-- 測驗畫面 -->
+        <!-- 測驗畫面與結果畫面保持不變 -->
         <div id="quiz-screen" class="glass-card rounded-3xl p-8 md:p-12 hidden-screen">
             <div class="mb-6 flex justify-between items-center text-sm text-indigo-300">
                 <span id="display-name" class="font-bold uppercase tracking-widest">USER: 載入中...</span>
@@ -117,7 +124,6 @@
             </div>
         </div>
 
-        <!-- 結果畫面 -->
         <div id="result-screen" class="glass-card rounded-3xl p-8 md:p-12 text-center hidden-screen">
             <h3 id="final-user-name" class="text-indigo-300 text-lg mb-2"></h3>
             <div class="text-7xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400 tracking-tighter">
@@ -137,10 +143,10 @@
     </div>
 
     <script>
-        // 問題與邏輯保持不變
+        // 問題邏輯與 Profile 資料保持不變
         const questions = [
             { q: "1. 結束疲憊的一天後，你覺得怎麼休息最舒服？", optA: { text: "找好朋友聚聚、聊聊天，感覺比較有精神", trait: "E" }, optB: { text: "把自己關在房間安靜一下，不想跟任何人說話", trait: "I" } },
-            { q: "2. 在滑社群媒體（如Threads或IG）時，你比較會被哪種內容吸引？", optA: { text: "實用的生活攻略、或是朋友發生了什麼具體的事", trait: "S" }, optB: { text: "心靈雞湯、燒腦的理論或是很有創意的梗圖", trait: "N" } },
+            { q: "2. 在滑社群媒體時，你比較會被哪種內容吸引？", optA: { text: "實用的生活攻略、或是朋友發生了什麼具體的事", trait: "S" }, optB: { text: "心靈雞湯、燒腦的理論或是很有創意的梗圖", trait: "N" } },
             { q: "3. 朋友被另一半甩了找你哭訴，你的反應通常是？", optA: { text: "幫他分析為什麼會分手，並給他實際的建議", trait: "T" }, optB: { text: "先抱抱他，陪他一起罵對方，讓他在情感上被支持", trait: "F" } },
             { q: "4. 明天要出國旅行，你現在的狀態是？", optA: { text: "行程表早就印好，每個景點的交通都查過了", trait: "J" }, optB: { text: "還沒開始收行李，打算到當地再看心情決定去哪", trait: "P" } },
             { q: "5. 在一群不熟的人中間，你通常是那個...？", optA: { text: "負責開話題的人，不說話會覺得尷尬", trait: "E" }, optB: { text: "默默滑手機或觀察大家的人，希望沒人注意到我", trait: "I" } },
@@ -221,7 +227,6 @@
             document.getElementById('result-title').innerText = profile.title;
             document.getElementById('result-desc').innerText = profile.desc;
 
-            // 呼叫雲端儲存函式
             if (window.saveToCloud) {
                 window.saveToCloud(userName, finalMBTI);
             }
