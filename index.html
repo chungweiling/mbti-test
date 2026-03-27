@@ -66,6 +66,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
         .tech-btn::before {
             content: '';
@@ -98,7 +99,7 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center relative">
+<body class="flex items-center justify-center relative min-h-screen">
 
     <!-- 動態背景圓形元素 -->
     <div class="blob blob-1"></div>
@@ -121,7 +122,7 @@
             <p class="text-indigo-200 mb-8 text-lg">
                 透過 10 個核心維度問題，精準掃描並解碼你的大腦運作模式（MBTI）。<br>準備好連接系統了嗎？
             </p>
-            <button onclick="startQuiz()" class="tech-btn bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-8 rounded-full text-lg w-full md:w-auto">
+            <button onclick="startQuiz()" class="tech-btn bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-8 rounded-full text-lg w-full md:w-auto shadow-lg">
                 啟動分析序列
             </button>
         </div>
@@ -134,7 +135,7 @@
             </div>
             <!-- 進度條 -->
             <div class="w-full bg-gray-700/50 rounded-full h-2 mb-8 overflow-hidden">
-                <div id="progress-bar" class="bg-gradient-to-r from-indigo-400 to-purple-400 h-2 rounded-full transition-all duration-500" style="width: 10%"></div>
+                <div id="progress-bar-fill" class="bg-gradient-to-r from-indigo-400 to-purple-400 h-2 rounded-full transition-all duration-500" style="width: 10%"></div>
             </div>
 
             <!-- 問題區塊 -->
@@ -166,8 +167,8 @@
                 載入描述中...
             </p>
 
-            <!-- 測驗雷達數據 (視覺裝飾) -->
-            <div class="grid grid-cols-2 gap-4 mb-8 text-sm">
+            <!-- 測驗數據數據裝飾 -->
+            <div class="grid grid-cols-2 gap-4 mb-8 text-sm text-left">
                 <div class="bg-white/5 p-3 rounded-lg border border-white/10">能量方向 <span class="text-indigo-400 font-bold block text-lg" id="stat-ei"></span></div>
                 <div class="bg-white/5 p-3 rounded-lg border border-white/10">認知方式 <span class="text-purple-400 font-bold block text-lg" id="stat-sn"></span></div>
                 <div class="bg-white/5 p-3 rounded-lg border border-white/10">決策模式 <span class="text-cyan-400 font-bold block text-lg" id="stat-tf"></span></div>
@@ -270,7 +271,7 @@
         const optionABtn = document.getElementById('option-a');
         const optionBBtn = document.getElementById('option-b');
         const progressText = document.getElementById('progress-text');
-        const progressBar = document.getElementById('progressBar');
+        const progressBarFill = document.getElementById('progress-bar-fill');
 
         // 啟動測驗
         function startQuiz() {
@@ -281,35 +282,32 @@
 
         // 渲染題目
         function renderQuestion() {
-            // 重置動畫
+            // 重置動畫效果
             questionContainer.classList.remove('fade-in-up');
-            void questionContainer.offsetWidth; // 觸發重繪 (Reflow)
+            void questionContainer.offsetWidth; 
             questionContainer.classList.add('fade-in-up');
 
             const currentQ = questions[currentQuestionIndex];
             questionText.innerText = currentQ.q;
             
-            // 綁定選項文字與特質屬性
             optionABtn.innerText = currentQ.optA.text;
-            optionABtn.dataset.trait = currentQ.optA.trait;
+            optionABtn.setAttribute('data-trait', currentQ.optA.trait);
             
             optionBBtn.innerText = currentQ.optB.text;
-            optionBBtn.dataset.trait = currentQ.optB.trait;
+            optionBBtn.setAttribute('data-trait', currentQ.optB.trait);
 
-            // 更新進度
+            // 更新進度顯示
             progressText.innerText = `${currentQuestionIndex + 1} / ${questions.length}`;
             const percentage = ((currentQuestionIndex + 1) / questions.length) * 100;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            progressBarFill.style.width = `${percentage}%`;
         }
 
         // 選擇選項
         function selectOption(opt) {
-            // 取得選擇的特質並加分
             const btn = opt === 'A' ? optionABtn : optionBBtn;
-            const trait = btn.dataset.trait;
-            scores[trait]++;
+            const trait = btn.getAttribute('data-trait');
+            if (trait) scores[trait]++;
 
-            // 進入下一題或顯示結果
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.length) {
                 renderQuestion();
@@ -320,33 +318,27 @@
 
         // 計算結果並顯示
         function calculateResult() {
-            // 決定四個維度的字母
-            // T/F 和 J/P 只有兩題，若同分(1:1)，設計上預設給 T 和 J，但其實這只是一般趣味測驗。
             const typeE_I = scores.E >= scores.I ? 'E' : 'I';
             const typeS_N = scores.S >= scores.N ? 'S' : 'N';
             const typeT_F = scores.T >= scores.F ? 'T' : 'F';
             const typeJ_P = scores.J >= scores.P ? 'J' : 'P';
 
             const finalMBTI = `${typeE_I}${typeS_N}${typeT_F}${typeJ_P}`;
-            const profile = mbtiProfiles[finalMBTI];
+            const profile = mbtiProfiles[finalMBTI] || mbtiProfiles["INTJ"]; // 備援機制
 
-            // 隱藏測驗畫面，顯示結果
             quizScreen.classList.add('hidden-screen');
             resultScreen.classList.remove('hidden-screen');
-            
-            // 加入顯影動畫
             resultScreen.classList.add('fade-in-up');
 
-            // 寫入資料
             document.getElementById('result-mbti').innerText = finalMBTI;
             document.getElementById('result-title').innerText = profile.title;
             document.getElementById('result-desc').innerText = profile.desc;
 
-            // 填寫小數據裝飾
-            document.getElementById('stat-ei').innerText = `${scores.E} : ${scores.I}`;
-            document.getElementById('stat-sn').innerText = `${scores.S} : ${scores.N}`;
-            document.getElementById('stat-tf').innerText = `${scores.T} : ${scores.F}`;
-            document.getElementById('stat-jp').innerText = `${scores.J} : ${scores.P}`;
+            // 顯示原始數據數據
+            document.getElementById('stat-ei').innerText = `E ${scores.E} : I ${scores.I}`;
+            document.getElementById('stat-sn').innerText = `S ${scores.S} : N ${scores.N}`;
+            document.getElementById('stat-tf').innerText = `T ${scores.T} : F ${scores.F}`;
+            document.getElementById('stat-jp').innerText = `J ${scores.J} : P ${scores.P}`;
         }
     </script>
 </body>
