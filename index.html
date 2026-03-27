@@ -8,12 +8,13 @@
     <!-- 引入 Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- 已替換為你的專屬 Firebase 配置 ---
+        // --- 你的專屬 Firebase 配置 ---
         const firebaseConfig = {
             apiKey: "AIzaSyBYpIYY7h2nseUQxgVtxOTpFlGXhEej-fo",
             authDomain: "mbti-test-20b47.firebaseapp.com",
+            databaseURL: "https://mbti-test-20b47-default-rtdb.firebaseio.com",
             projectId: "mbti-test-20b47",
             storageBucket: "mbti-test-20b47.firebasestorage.app",
             messagingSenderId: "957808705740",
@@ -23,17 +24,19 @@
         // ---------------------------------------
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
 
-        // 將儲存函數掛載到 window，讓下方的普通 script 可以呼叫
+        // 改用 Realtime Database 儲存
         window.saveToCloud = async (userName, mbtiResult) => {
             try {
-                await addDoc(collection(db, "mbti_results"), {
+                const resultsRef = ref(db, 'mbti_results');
+                const newResultRef = push(resultsRef);
+                await set(newResultRef, {
                     name: userName,
                     result: mbtiResult,
-                    timestamp: serverTimestamp()
+                    timestamp: new Date().toISOString()
                 });
-                console.log("數據已成功同步至 Firestore 資料庫");
+                console.log("數據已成功同步至 Realtime 資料庫");
             } catch (e) {
                 console.error("雲端同步失敗: ", e);
             }
@@ -126,7 +129,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
-                數據已同步至雲端伺服器 (Firebase)
+                數據已同步至雲端伺服器 (Realtime)
             </div>
             <button onclick="location.reload()" class="tech-btn bg-white/10 border border-white/20 py-3 px-8 rounded-full hover:bg-white/20 transition-all">重新啟動掃描</button>
         </div>
@@ -134,6 +137,7 @@
     </div>
 
     <script>
+        // 問題與邏輯保持不變
         const questions = [
             { q: "1. 結束疲憊的一天後，你覺得怎麼休息最舒服？", optA: { text: "找好朋友聚聚、聊聊天，感覺比較有精神", trait: "E" }, optB: { text: "把自己關在房間安靜一下，不想跟任何人說話", trait: "I" } },
             { q: "2. 在滑社群媒體（如Threads或IG）時，你比較會被哪種內容吸引？", optA: { text: "實用的生活攻略、或是朋友發生了什麼具體的事", trait: "S" }, optB: { text: "心靈雞湯、燒腦的理論或是很有創意的梗圖", trait: "N" } },
