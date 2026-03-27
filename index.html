@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技感 MBTI 人格測驗</title>
+    <!-- 引入 Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 科技感深色藍紫漸層背景 */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #000000 100%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 動態圓形元素動畫 (Blob) */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .blob-1 {
+            width: 400px; height: 400px;
+            background: rgba(99, 102, 241, 0.5); /* 靛藍色 */
+            top: -10%; left: -10%;
+            animation-delay: 0s;
+        }
+        .blob-2 {
+            width: 500px; height: 500px;
+            background: rgba(168, 85, 247, 0.4); /* 紫色 */
+            bottom: -20%; right: -10%;
+            animation-delay: -5s;
+        }
+        .blob-3 {
+            width: 300px; height: 300px;
+            background: rgba(56, 189, 248, 0.4); /* 淺藍色 */
+            top: 40%; left: 50%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+            100% { transform: translate(-30px, 60px) scale(0.9); }
+        }
+
+        /* 簡潔玻璃卡片風格 (Glassmorphism) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            position: relative;
+        }
+
+        /* 按鈕科技感光暈與懸停動畫 */
+        .tech-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .tech-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.5s ease;
+        }
+        .tech-btn:hover::before {
+            left: 100%;
+        }
+        .tech-btn:hover {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* 滾動/切換顯影動畫 */
+        .fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 隱藏元素用 */
+        .hidden-screen {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center relative">
+
+    <!-- 動態背景圓形元素 -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- 主要內容容器 -->
+    <div class="w-full max-w-2xl px-4 py-8 relative z-10">
+        
+        <!-- 首頁畫面 -->
+        <div id="welcome-screen" class="glass-card rounded-3xl p-8 md:p-12 text-center fade-in-up">
+            <div class="inline-block p-4 rounded-full bg-indigo-500/20 mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+                AI 核心人格解析系統
+            </h1>
+            <p class="text-indigo-200 mb-8 text-lg">
+                透過 10 個核心維度問題，精準掃描並解碼你的大腦運作模式（MBTI）。<br>準備好連接系統了嗎？
+            </p>
+            <button onclick="startQuiz()" class="tech-btn bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-8 rounded-full text-lg w-full md:w-auto">
+                啟動分析序列
+            </button>
+        </div>
+
+        <!-- 測驗畫面 -->
+        <div id="quiz-screen" class="glass-card rounded-3xl p-8 md:p-12 hidden-screen">
+            <div class="mb-8 flex justify-between items-center text-sm font-medium text-indigo-300">
+                <span>系統分析進度</span>
+                <span id="progress-text">1 / 10</span>
+            </div>
+            <!-- 進度條 -->
+            <div class="w-full bg-gray-700/50 rounded-full h-2 mb-8 overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-indigo-400 to-purple-400 h-2 rounded-full transition-all duration-500" style="width: 10%"></div>
+            </div>
+
+            <!-- 問題區塊 -->
+            <div id="question-container" class="fade-in-up min-h-[250px] flex flex-col justify-center">
+                <h2 id="question-text" class="text-2xl md:text-3xl font-bold mb-8 leading-relaxed">
+                    載入問題中...
+                </h2>
+                <div class="space-y-4 flex-grow">
+                    <button onclick="selectOption('A')" id="option-a" class="tech-btn w-full text-left bg-white/5 hover:bg-white/10 border border-indigo-500/30 rounded-xl p-5 text-lg transition-all">
+                        選項 A
+                    </button>
+                    <button onclick="selectOption('B')" id="option-b" class="tech-btn w-full text-left bg-white/5 hover:bg-white/10 border border-indigo-500/30 rounded-xl p-5 text-lg transition-all">
+                        選項 B
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 結果畫面 -->
+        <div id="result-screen" class="glass-card rounded-3xl p-8 md:p-12 text-center hidden-screen">
+            <h3 class="text-indigo-300 text-lg font-medium mb-2 uppercase tracking-widest">分析完成 - 你的核心代碼</h3>
+            <div class="text-6xl md:text-8xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 tracking-wider">
+                <span id="result-mbti">XXXX</span>
+            </div>
+            <h2 id="result-title" class="text-2xl md:text-3xl font-bold mb-4 text-white">
+                載入中...
+            </h2>
+            <p id="result-desc" class="text-indigo-100 text-lg mb-8 leading-relaxed bg-black/20 p-6 rounded-2xl border border-white/5">
+                載入描述中...
+            </p>
+
+            <!-- 測驗雷達數據 (視覺裝飾) -->
+            <div class="grid grid-cols-2 gap-4 mb-8 text-sm">
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10">能量方向 <span class="text-indigo-400 font-bold block text-lg" id="stat-ei"></span></div>
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10">認知方式 <span class="text-purple-400 font-bold block text-lg" id="stat-sn"></span></div>
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10">決策模式 <span class="text-cyan-400 font-bold block text-lg" id="stat-tf"></span></div>
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10">生活態度 <span class="text-pink-400 font-bold block text-lg" id="stat-jp"></span></div>
+            </div>
+
+            <button onclick="location.reload()" class="tech-btn bg-white/10 border border-white/20 hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-full text-lg w-full md:w-auto">
+                重新啟動分析
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 測驗邏輯 JavaScript -->
+    <script>
+        // 定義 10 個問題 (E/I: 3題, S/N: 3題, T/F: 2題, J/P: 2題)
+        const questions = [
+            {
+                q: "1. 週末好不容易有空閒時間，你通常傾向怎麼度過？",
+                optA: { text: "和朋友聚會、參加有趣的活動去充電", trait: "E" },
+                optB: { text: "獨自在家看書、追劇或打遊戲來恢復精力", trait: "I" }
+            },
+            {
+                q: "2. 當你學習一項新技能或接觸新事物時，你比較偏好？",
+                optA: { text: "直接了解具體的步驟、按部就班實際操作", trait: "S" },
+                optB: { text: "先了解它背後的概念、理論和整體的意義", trait: "N" }
+            },
+            {
+                q: "3. 面對需要做決定的情況時，你主要依賴什麼標準？",
+                optA: { text: "邏輯分析、客觀事實與效率考量", trait: "T" },
+                optB: { text: "個人價值觀、以及這個決定會對他人造成的情感影響", trait: "F" }
+            },
+            {
+                q: "4. 面對即將到來的旅行，你的準備方式通常是？",
+                optA: { text: "提前規劃好詳細的行程表和訂好所有票券", trait: "J" },
+                optB: { text: "只決定大方向，喜歡隨性探索、見機行事", trait: "P" }
+            },
+            {
+                q: "5. 在一個有許多陌生人的社交場合中，你的狀態通常是？",
+                optA: { text: "主動找人搭話，很容易融入熱鬧的氣氛", trait: "E" },
+                optB: { text: "待在舒適圈，傾向等別人來找我或只和熟人說話", trait: "I" }
+            },
+            {
+                q: "6. 在日常生活中，你的思維更常聚焦在？",
+                optA: { text: "此時此地的現實狀況、以及眼前的具體細節", trait: "S" },
+                optB: { text: "未來的各種可能性、隱藏的含義或創意發想", trait: "N" }
+            },
+            {
+                q: "7. 當朋友遇到困難或心情不好來找你傾訴，你通常的第一反應是？",
+                optA: { text: "幫他理性分析問題癥結點，並提出解決方案", trait: "T" },
+                optB: { text: "先安撫他的情緒，表達理解、同理與支持", trait: "F" }
+            },
+            {
+                q: "8. 關於你的工作或生活風格，你覺得哪種描述更貼切？",
+                optA: { text: "喜歡有條理、有明確截止日期、按計畫完成任務", trait: "J" },
+                optB: { text: "喜歡保持彈性、邊做邊調整，甚至享受最後一刻的靈感", trait: "P" }
+            },
+            {
+                q: "9. 經歷了一整天的高強度工作或學習後，你會如何「充電」？",
+                optA: { text: "找人聊聊今天的趣事或出門走走", trait: "E" },
+                optB: { text: "給自己完全安靜、不被打擾的獨處時間", trait: "I" }
+            },
+            {
+                q: "10. 當你要向別人描述一件事情時，你通常會？",
+                optA: { text: "提供非常詳細、精確的具體細節和過程", trait: "S" },
+                optB: { text: "直接講述整體的輪廓、重點或是你的直覺感受", trait: "N" }
+            }
+        ];
+
+        // 16 型人格描述字典
+        const mbtiProfiles = {
+            "INTJ": { title: "建築師 (Architect)", desc: "想像力豐富且具戰略性的思想家，一切皆在計畫之中。你擁有強大的邏輯與遠見。" },
+            "INTP": { title: "邏輯學家 (Logician)", desc: "渴望知識的創新發明家。你對於宇宙的運作原理與未知的理論充滿著無窮的好奇。" },
+            "ENTJ": { title: "指揮官 (Commander)", desc: "大膽、富有想像力且意志強大的領導者。你總能找到方法——或自己創造方法。" },
+            "ENTP": { title: "辯論家 (Debater)", desc: "聰明好奇的思想者，無法抗拒智力挑戰。你喜歡拆解舊觀念，享受腦力激盪的快感。" },
+            "INFJ": { title: "提倡者 (Advocate)", desc: "安靜而神祕，但極具啟發性的理想主義者。你擁有深刻的洞察力，渴望為世界帶來正向改變。" },
+            "INFP": { title: "調停者 (Mediator)", desc: "詩意、善良的利他主義者。你的內心世界極其豐富，總是熱衷於捍衛你所信仰的價值觀。" },
+            "ENFJ": { title: "主人翁 (Protagonist)", desc: "充滿魅力且具啟發性的領導者。你擁有極強的同理心，擅長激勵聽眾並帶領團隊前進。" },
+            "ENFP": { title: "競選者 (Campaigner)", desc: "熱情洋溢的自由靈魂。你極具創意，總是能在平凡的生活中找到無窮的樂趣與可能性。" },
+            "ISTJ": { title: "物流師 (Logistician)", desc: "實際且注重事實的個人。你極度可靠、一絲不苟，是維持社會秩序與穩定運作的基石。" },
+            "ISFJ": { title: "守衛者 (Defender)", desc: "非常專注且溫暖的保護者。你默默付出，總是準備好用極大的耐心去照顧與保護所愛之人。" },
+            "ESTJ": { title: "總經理 (Executive)", desc: "出色的管理者。你講求效率與規則，擅長管理事物或人員，能在混亂中建立起秩序。" },
+            "ESFJ": { title: "執政官 (Consul)", desc: "極度關心他人、善於社交的受歡迎人士。你熱心助人，總是致力於確保周遭的人感到快樂。" },
+            "ISTP": { title: "鑑賞家 (Virtuoso)", desc: "大膽實用的實驗者。你沈著冷靜，喜歡用雙手探索世界，掌握各種工具與技能。" },
+            "ISFP": { title: "探險家 (Adventurer)", desc: "靈活且充滿魅力的藝術家。你活在當下，打破常規，隨時準備探索新事物與新體驗。" },
+            "ESTP": { title: "企業家 (Entrepreneur)", desc: "聰明、精力充沛且非常敏銳。你喜歡活在刺激之中，是天生的行動派，擅長解決眼前的問題。" },
+            "ESFP": { title: "表演者 (Entertainer)", desc: "隨性、精力充沛且熱情的藝人。有你在的地方就充滿歡樂，你擅長將每一刻變成派對。" }
+        };
+
+        // 狀態變數
+        let currentQuestionIndex = 0;
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        // DOM 元素
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionContainer = document.getElementById('question-container');
+        const questionText = document.getElementById('question-text');
+        const optionABtn = document.getElementById('option-a');
+        const optionBBtn = document.getElementById('option-b');
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.getElementById('progressBar');
+
+        // 啟動測驗
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden-screen');
+            quizScreen.classList.remove('hidden-screen');
+            renderQuestion();
+        }
+
+        // 渲染題目
+        function renderQuestion() {
+            // 重置動畫
+            questionContainer.classList.remove('fade-in-up');
+            void questionContainer.offsetWidth; // 觸發重繪 (Reflow)
+            questionContainer.classList.add('fade-in-up');
+
+            const currentQ = questions[currentQuestionIndex];
+            questionText.innerText = currentQ.q;
+            
+            // 綁定選項文字與特質屬性
+            optionABtn.innerText = currentQ.optA.text;
+            optionABtn.dataset.trait = currentQ.optA.trait;
+            
+            optionBBtn.innerText = currentQ.optB.text;
+            optionBBtn.dataset.trait = currentQ.optB.trait;
+
+            // 更新進度
+            progressText.innerText = `${currentQuestionIndex + 1} / ${questions.length}`;
+            const percentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+
+        // 選擇選項
+        function selectOption(opt) {
+            // 取得選擇的特質並加分
+            const btn = opt === 'A' ? optionABtn : optionBBtn;
+            const trait = btn.dataset.trait;
+            scores[trait]++;
+
+            // 進入下一題或顯示結果
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                renderQuestion();
+            } else {
+                calculateResult();
+            }
+        }
+
+        // 計算結果並顯示
+        function calculateResult() {
+            // 決定四個維度的字母
+            // T/F 和 J/P 只有兩題，若同分(1:1)，設計上預設給 T 和 J，但其實這只是一般趣味測驗。
+            const typeE_I = scores.E >= scores.I ? 'E' : 'I';
+            const typeS_N = scores.S >= scores.N ? 'S' : 'N';
+            const typeT_F = scores.T >= scores.F ? 'T' : 'F';
+            const typeJ_P = scores.J >= scores.P ? 'J' : 'P';
+
+            const finalMBTI = `${typeE_I}${typeS_N}${typeT_F}${typeJ_P}`;
+            const profile = mbtiProfiles[finalMBTI];
+
+            // 隱藏測驗畫面，顯示結果
+            quizScreen.classList.add('hidden-screen');
+            resultScreen.classList.remove('hidden-screen');
+            
+            // 加入顯影動畫
+            resultScreen.classList.add('fade-in-up');
+
+            // 寫入資料
+            document.getElementById('result-mbti').innerText = finalMBTI;
+            document.getElementById('result-title').innerText = profile.title;
+            document.getElementById('result-desc').innerText = profile.desc;
+
+            // 填寫小數據裝飾
+            document.getElementById('stat-ei').innerText = `${scores.E} : ${scores.I}`;
+            document.getElementById('stat-sn').innerText = `${scores.S} : ${scores.N}`;
+            document.getElementById('stat-tf').innerText = `${scores.T} : ${scores.F}`;
+            document.getElementById('stat-jp').innerText = `${scores.J} : ${scores.P}`;
+        }
+    </script>
+</body>
+</html>
